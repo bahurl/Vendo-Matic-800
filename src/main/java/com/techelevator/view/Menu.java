@@ -1,5 +1,7 @@
 package com.techelevator.view;
 
+import com.techelevator.VendingMachineCLI;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -47,6 +49,7 @@ public class Menu {
 			int optionNum = i + 1;
 			out.println(optionNum + ") " + options[i]);
 		}
+		out.print(System.lineSeparator() + "Current money provided: $"+ VendingMachineCLI.getMachineBalance());
 		out.print(System.lineSeparator() + "Please choose an option >>> ");
 		out.flush();
 	}
