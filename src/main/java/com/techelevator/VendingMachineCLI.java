@@ -11,17 +11,21 @@ import java.util.*;
 
 public class VendingMachineCLI {
 
+    //Main menu options
     private static final String MAIN_MENU_OPTION_DISPLAY_ITEMS = "Display Vending Machine Items";
     private static final String MAIN_MENU_OPTION_PURCHASE = "Purchase";
     private static final String MAIN_MENU_OPTION_EXIT = "Exit";
-
     private static final String[] MAIN_MENU_OPTIONS =
             {MAIN_MENU_OPTION_DISPLAY_ITEMS, MAIN_MENU_OPTION_PURCHASE, MAIN_MENU_OPTION_EXIT};
+
+    //purchase menu options
     private static final String PURCHASE_MENU_FEED_MONEY = "Feed Money";
     private static final String PURCHASE_MENU_SELECT_PRODUCT = "Select Product";
     private static final String PURCHASE_MENU_FINISH_TRANSACTION = "Finish Transaction";
     private static final String[] PURCHASE_MENU_OPTIONS =
             {PURCHASE_MENU_FEED_MONEY, PURCHASE_MENU_SELECT_PRODUCT, PURCHASE_MENU_FINISH_TRANSACTION};
+
+    //Feed money menu options
     private static final double ONE_DOLLAR = 1;
     private static final double TWO_DOLLARS = 2;
     private static final double FIVE_DOLLARS = 5;
@@ -47,32 +51,27 @@ public class VendingMachineCLI {
 
     public void run() {
         stockVendingMachine();
-        while (true) {
+
+        while (true) { //Main menu - Display items, purchase, exit
             String choice = (String) menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 
             if (choice.equals(MAIN_MENU_OPTION_DISPLAY_ITEMS)) {
-                // display vending machine items
                 displayItems();
             } else if (choice.equals(MAIN_MENU_OPTION_PURCHASE)) {
-                // do purchase
-                while (true) {
+
+                while (true) { //Purchase menu - Feed money, select product, finish transaction
                     String purchaseChoice = (String) menu.getChoiceFromOptions(PURCHASE_MENU_OPTIONS);
                     if (purchaseChoice.equals(PURCHASE_MENU_FEED_MONEY)) {
                         feedMoney();
-
                     } else if (purchaseChoice.equals(PURCHASE_MENU_SELECT_PRODUCT)) {
                         purchaseProduct();
-
                     } else if (purchaseChoice.equals(PURCHASE_MENU_FINISH_TRANSACTION)) {
                         makeChange();
                         break;
-
                     }
-
                 }
             } else if (choice.equals(MAIN_MENU_OPTION_EXIT)) {
                 return;
-
             }
         }
     }
@@ -111,46 +110,48 @@ public class VendingMachineCLI {
                 machineBalance += (double) feedMoneyChoice;
                 //log trasactions
             }
-
         }
-
     }
 
     private void purchaseProduct() {
         Scanner input = new Scanner(System.in);
+
         displayItems();
+
         System.out.println("Choose item by entering display code: ");
         String displayChoice = input.nextLine();
         VendingMachingItem chosenItem = null;
+
         for (int i = 0; i < vendingMachineItems.size(); i++) {
             if (displayChoice.equalsIgnoreCase(vendingMachineItems.get(i).getSlotIdentifier())) {
                 chosenItem = vendingMachineItems.get(i);
                 break;
             }
         }
+
         if (chosenItem == null) {
             System.out.println("Product does not exist");
         } else if (chosenItem.getItemAmount() == 0) {
             System.out.println("Product is sold out");
-
         } else if (machineBalance < chosenItem.getPrice()) {
             System.out.println("Balance is not high enough to purchase this product");
-
         } else {
             machineBalance -= chosenItem.getPrice();
             chosenItem.sellItem();
             System.out.println(chosenItem + "\nRemaining balance: " + machineBalance);
             //log transaction
         }
-
     }
 
     private void makeChange() {
         //log transaction
+
         Map<String, Integer> changeReturned = new HashMap<>();
+
         machineBalance *= 100;
+
         while (machineBalance > 0) {
-            if (machineBalance >= 25) {
+            if (machineBalance >= 25) { //adds quarters
                 if (changeReturned.containsKey("Quarter")) {
                     changeReturned.put("Quarter", (changeReturned.get("Quarter") + 1));
                 } else {
@@ -158,30 +159,34 @@ public class VendingMachineCLI {
                 }
 
                 machineBalance -= 25;
-            } else if (machineBalance >= 10) {
+            } else if (machineBalance >= 10) { //adds dimes
+
                 if (changeReturned.containsKey("Dime")) {
                     changeReturned.put("Dime", (changeReturned.get("Dime") + 1));
                 } else {
                     changeReturned.put("Dime", 1);
                 }
+
                 machineBalance -= 10;
-            } else if (machineBalance >= 5) {
+            } else if (machineBalance >= 5) { //adds nickels
                 if (changeReturned.containsKey("Nickel")) {
                     changeReturned.put("Nickel", (changeReturned.get("Nickel") + 1));
                 } else {
                     changeReturned.put("Nickel", 1);
                 }
+
                 machineBalance -= 5;
             } else {
                 machineBalance = 0;
             }
         }
+
         System.out.println("Change returned:");
+
+        //loops through the map and prints out the change
         for (Map.Entry<String, Integer> coin : changeReturned.entrySet()) {
             System.out.println(coin.getValue() + " " + coin.getKey() + (coin.getValue() > 1 ? "s" : ""));
         }
-
-
     }
 
 
