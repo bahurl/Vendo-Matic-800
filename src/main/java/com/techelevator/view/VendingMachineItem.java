@@ -1,13 +1,13 @@
 package com.techelevator.view;
 
-public class VendingMachingItem {
+public class VendingMachineItem {
     private String slotIdentifier;
     private String name;
     private double price;
     private String type;
     private int itemAmount;
 
-    public VendingMachingItem(String slotIdentifier, String name, String price, String type) {
+    public VendingMachineItem(String slotIdentifier, String name, String price, String type) {
         this.slotIdentifier = slotIdentifier;
         this.name = name;
         this.price = Double.parseDouble(price);

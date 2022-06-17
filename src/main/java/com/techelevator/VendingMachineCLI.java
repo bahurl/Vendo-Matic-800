@@ -1,10 +1,13 @@
 package com.techelevator;
 
 import com.techelevator.view.Menu;
-import com.techelevator.view.VendingMachingItem;
+import com.techelevator.view.PurchaseException;
+import com.techelevator.view.VendingMachineItem;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -36,7 +39,7 @@ public class VendingMachineCLI {
 
     private Menu menu;
     private static double machineBalance = 0;
-    private List<VendingMachingItem> vendingMachineItems = new ArrayList<>();
+    private List<VendingMachineItem> vendingMachineItems = new ArrayList<>();
     private File logFile = new File("log.txt");
     private SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
 
@@ -60,11 +63,17 @@ public class VendingMachineCLI {
             } else if (choice.equals(MAIN_MENU_OPTION_PURCHASE)) {
 
                 while (true) { //Purchase menu - Feed money, select product, finish transaction
+                    //out.print(System.lineSeparator() + "Current money provided: $"+ VendingMachineCLI.getMachineBalance());
+                    System.out.println("Current money provided: $"+ machineBalance);
                     String purchaseChoice = (String) menu.getChoiceFromOptions(PURCHASE_MENU_OPTIONS);
                     if (purchaseChoice.equals(PURCHASE_MENU_FEED_MONEY)) {
                         feedMoney();
                     } else if (purchaseChoice.equals(PURCHASE_MENU_SELECT_PRODUCT)) {
-                        purchaseProduct();
+                        try{
+                            purchaseProduct();
+                        } catch (PurchaseException e){
+                            System.out.println("Error: " + e.getMessage());
+                        }
                     } else if (purchaseChoice.equals(PURCHASE_MENU_FINISH_TRANSACTION)) {
                         makeChange();
                         break;
@@ -82,7 +91,7 @@ public class VendingMachineCLI {
             while (inventory.hasNext()) {
                 String input = inventory.nextLine();
                 String[] itemInfo = input.split("\\|");
-                VendingMachingItem item = new VendingMachingItem(itemInfo[0], itemInfo[1], itemInfo[2], itemInfo[3]);
+                VendingMachineItem item = new VendingMachineItem(itemInfo[0], itemInfo[1], itemInfo[2], itemInfo[3]);
                 vendingMachineItems.add(item);
             }
         } catch (FileNotFoundException e) {
@@ -91,7 +100,7 @@ public class VendingMachineCLI {
     }
 
     private void displayItems() {
-        for (VendingMachingItem item : vendingMachineItems) {
+        for (VendingMachineItem item : vendingMachineItems) {
 
             System.out.print(item.getSlotIdentifier() + ") ");
             System.out.print("$" + item.getPrice() + " ");
@@ -100,7 +109,7 @@ public class VendingMachineCLI {
         }
     }
 
-    private void feedMoney() {
+    public void feedMoney() {
         while (true) {
             System.out.println("Feed money in to the machine in values of $1, $2, $5, or $10");
             Object feedMoneyChoice = menu.getChoiceFromOptions(FEED_MONEY_MENU);
@@ -108,19 +117,19 @@ public class VendingMachineCLI {
                 break;
             } else {
                 machineBalance += (double) feedMoneyChoice;
-                //log trasactions
+                logTransactions("FEED MONEY: $" + feedMoneyChoice + " $" + machineBalance);
             }
         }
     }
 
-    private void purchaseProduct() {
+    private void purchaseProduct() throws PurchaseException {
         Scanner input = new Scanner(System.in);
 
         displayItems();
 
         System.out.println("Choose item by entering display code: ");
         String displayChoice = input.nextLine();
-        VendingMachingItem chosenItem = null;
+        VendingMachineItem chosenItem = null;
 
         for (int i = 0; i < vendingMachineItems.size(); i++) {
             if (displayChoice.equalsIgnoreCase(vendingMachineItems.get(i).getSlotIdentifier())) {
@@ -130,21 +139,22 @@ public class VendingMachineCLI {
         }
 
         if (chosenItem == null) {
-            System.out.println("Product does not exist");
+            throw new PurchaseException("Product does not exist");
         } else if (chosenItem.getItemAmount() == 0) {
-            System.out.println("Product is sold out");
+            throw new PurchaseException("Product is sold out");
         } else if (machineBalance < chosenItem.getPrice()) {
-            System.out.println("Balance is not high enough to purchase this product");
+            throw new PurchaseException("Balance is not high enough to purchase this product");
         } else {
+            double originalBalance = machineBalance;
             machineBalance -= chosenItem.getPrice();
             chosenItem.sellItem();
             System.out.println(chosenItem + "\nRemaining balance: " + machineBalance);
-            //log transaction
+            logTransactions(chosenItem.getName() + " " + chosenItem.getSlotIdentifier() + " $" + originalBalance + " $" + machineBalance );
         }
     }
 
     private void makeChange() {
-        //log transaction
+        logTransactions("GIVE CHANGE: $" + machineBalance + " $0.00");
 
         Map<String, Integer> changeReturned = new HashMap<>();
 
@@ -187,8 +197,18 @@ public class VendingMachineCLI {
         for (Map.Entry<String, Integer> coin : changeReturned.entrySet()) {
             System.out.println(coin.getValue() + " " + coin.getKey() + (coin.getValue() > 1 ? "s" : ""));
         }
-    }
 
+    }
+    private void logTransactions(String logMessage){
+        try(PrintWriter logOutput = new PrintWriter(new FileOutputStream(logFile, true))){
+            logOutput.println(">" + formatter.format(new Date()) + " " + logMessage);
+
+        }
+        catch (FileNotFoundException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
 
     public static void main(String[] args) {
         Menu menu = new Menu(System.in, System.out);
