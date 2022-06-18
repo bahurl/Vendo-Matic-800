@@ -35,7 +35,9 @@ public class VendingMachineCLI {
     private static final String TWO_DOLLARS = "$2.00";
     private static final String FIVE_DOLLARS = "$5.00";
     private static final String TEN_DOLLARS = "$10.00";
-    private static final String FEED_MONEY_EXIT = "Exit";
+    //private static final String FEED_MONEY_EXIT = "Exit";
+    //After feeding money, user should choose purchase menu options
+    private static final String FEED_MONEY_EXIT = "Choose purchase menu options";
     private static final Object[] FEED_MONEY_MENU = {ONE_DOLLAR, TWO_DOLLARS, FIVE_DOLLARS, TEN_DOLLARS, FEED_MONEY_EXIT};
 
 
@@ -78,12 +80,17 @@ public class VendingMachineCLI {
                         }
                     } else if (purchaseChoice.equals(PURCHASE_MENU_FINISH_TRANSACTION)) {
                         makeChange();
+                        //Set machineBalance to zero
+                        machineBalance = BigDecimal.ZERO;
+                        System.out.println(System.lineSeparator() + "Current money provided: $"+ machineBalance.setScale(2, RoundingMode.HALF_UP));
                         break;
                     }
                 }
+
             } else if (choice.equals(MAIN_MENU_OPTION_EXIT)) {
                 return;
             }
+
         }
     }
 
@@ -202,6 +209,7 @@ public class VendingMachineCLI {
         for(Map.Entry<String, Integer> coin: changeReturned.entrySet()) {
             System.out.println(coin.getValue() +" "+ coin.getKey() + (coin.getValue() > 1 ? "s" : ""));
         }
+
     }
 
     private void logTransactions(String logMessage){
