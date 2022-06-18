@@ -1,16 +1,18 @@
 package com.techelevator.view;
 
+import java.math.BigDecimal;
+
 public class VendingMachineItem {
     private String slotIdentifier;
     private String name;
-    private double price;
+    private BigDecimal price;
     private String type;
     private int itemAmount;
 
     public VendingMachineItem(String slotIdentifier, String name, String price, String type) {
         this.slotIdentifier = slotIdentifier;
         this.name = name;
-        this.price = Double.parseDouble(price);
+        this.price = new BigDecimal(price);
         this.type = type;
         this.itemAmount = 5;
     }
@@ -23,7 +25,7 @@ public class VendingMachineItem {
         return name;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
@@ -39,7 +41,6 @@ public class VendingMachineItem {
         if (itemAmount > 0) {
             itemAmount--;
         }
-
     }
 
     @Override

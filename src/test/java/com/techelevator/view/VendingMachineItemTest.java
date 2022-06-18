@@ -1,29 +1,31 @@
 package com.techelevator.view;
 
+import com.techelevator.VendingMachineCLI;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class VendingMachineItemTest {
+
     @Test
     public void vending_machine_returns_chip_dispensing_message() {
         VendingMachineItem chipItem = new VendingMachineItem("A1", "Potato Crisps", "3.05", "Chip");
         String chipDispensingMessage = chipItem.toString();
         Assert.assertEquals("$3.05 Potato Crisps\nCrunch Crunch, Yum!", chipDispensingMessage);
-
     }
 
     @Test
     public void vending_machine_returns_candy_dispensing_message() {
         VendingMachineItem candyItem = new VendingMachineItem("B3", "Wonka Bar", "1.50", "Candy");
         String candyDispensingMessage = candyItem.toString();
-        Assert.assertEquals("$1.5 Wonka Bar\nMunch Munch, Yum!", candyDispensingMessage);
+        Assert.assertEquals("$1.50 Wonka Bar\nMunch Munch, Yum!", candyDispensingMessage);
     }
 
     @Test
     public void vending_machine_returns_drink_dispensing_message() {
         VendingMachineItem drinkItem = new VendingMachineItem("C2", "Dr. Salt", "1.50", "Drink");
         String drinkDispensingMessage = drinkItem.toString();
-        Assert.assertEquals("$1.5 Dr. Salt\nGlug Glug, Yum!", drinkDispensingMessage);
+        Assert.assertEquals("$1.50 Dr. Salt\nGlug Glug, Yum!", drinkDispensingMessage);
     }
 
     @Test
@@ -45,12 +47,12 @@ public class VendingMachineItemTest {
     @Test
     public void sold_out_item_does_not_decrease_item_amount() {
         VendingMachineItem vendingMachineItem = new VendingMachineItem("D1", "U-Chews", "0.85", "Gum");
-        vendingMachineItem.sellItem();
-        vendingMachineItem.sellItem();
-        vendingMachineItem.sellItem();
-        vendingMachineItem.sellItem();
+        vendingMachineItem.sellItem(); //4
+        vendingMachineItem.sellItem(); //3
+        vendingMachineItem.sellItem(); //2
+        vendingMachineItem.sellItem(); //1
+        vendingMachineItem.sellItem(); //0
         vendingMachineItem.sellItem();
         Assert.assertEquals(0, vendingMachineItem.getItemAmount());
-
     }
 }
