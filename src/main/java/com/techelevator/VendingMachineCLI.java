@@ -80,9 +80,6 @@ public class VendingMachineCLI {
                         }
                     } else if (purchaseChoice.equals(PURCHASE_MENU_FINISH_TRANSACTION)) {
                         makeChange();
-                        //Set machineBalance to zero
-                        machineBalance = BigDecimal.ZERO;
-                        System.out.println(System.lineSeparator() + "Current money provided: $"+ machineBalance.setScale(2, RoundingMode.HALF_UP));
                         break;
                     }
                 }
