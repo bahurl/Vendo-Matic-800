@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,11 +36,8 @@ public class VendingMachineCLI {
     private static final String TWO_DOLLARS = "$2.00";
     private static final String FIVE_DOLLARS = "$5.00";
     private static final String TEN_DOLLARS = "$10.00";
-    //private static final String FEED_MONEY_EXIT = "Exit";
-    //After feeding money, user should choose purchase menu options
     private static final String FEED_MONEY_EXIT = "Choose purchase menu options";
     private static final Object[] FEED_MONEY_MENU = {ONE_DOLLAR, TWO_DOLLARS, FIVE_DOLLARS, TEN_DOLLARS, FEED_MONEY_EXIT};
-
 
     private Menu menu;
     private static BigDecimal machineBalance = BigDecimal.ZERO;
@@ -157,7 +155,6 @@ public class VendingMachineCLI {
         } else {
             BigDecimal originalMachineBalance = machineBalance;
             machineBalance = machineBalance.subtract(chosenItem.getPrice());
-            //machineBalance -= chosenItem.getPrice();
             chosenItem.sellItem();
             System.out.println(chosenItem +"\nRemaining balance: " +machineBalance.setScale(2, RoundingMode.HALF_UP));
             logTransactions(chosenItem.getName() +" "+ chosenItem.getSlotIdentifier()+ " $"+originalMachineBalance.setScale(2, RoundingMode.HALF_UP)+" $"+machineBalance.setScale(2, RoundingMode.HALF_UP));
@@ -178,7 +175,6 @@ public class VendingMachineCLI {
                 }
 
                 machineBalance = machineBalance.subtract(new BigDecimal(.25));
-                //machineBalance -= .25;
             } else if (machineBalance.doubleValue() >= .10) {
                 if(changeReturned.containsKey("Dime")) {
                     changeReturned.put("Dime", (changeReturned.get("Dime") + 1));
@@ -186,8 +182,7 @@ public class VendingMachineCLI {
                     changeReturned.put("Dime", 1);
                 }
 
-                machineBalance = machineBalance.subtract(new BigDecimal(.10));
-                //machineBalance -= 10;
+                machineBalance = machineBalance.subtract(new BigDecimal(.10), new MathContext(1));
             } else if(machineBalance.doubleValue() >= .05) {
                 if(changeReturned.containsKey("Nickel")) {
                     changeReturned.put("Nickel", (changeReturned.get("Nickel") + 1));
@@ -195,8 +190,7 @@ public class VendingMachineCLI {
                     changeReturned.put("Nickel", 1);
                 }
 
-                machineBalance = machineBalance.subtract(new BigDecimal(.05));
-                //machineBalance -= 5;
+                machineBalance = machineBalance.subtract(new BigDecimal(.05), new MathContext(1));
             } else {
                 machineBalance = BigDecimal.ZERO;
             }
